@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "71726447984",
+    "firebase_url": "https://timetracker-bb3bb.firebaseio.com",
+    "project_id": "timetracker-bb3bb",
+    "storage_bucket": "timetracker-bb3bb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:71726447984:android:1a097e0491adf1ada963b5",
+        "android_client_info": {
+          "package_name": "com.example.bloc_flutter_time_tracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "71726447984-ga443n46ipc71t61bv93u6l5234ahhe3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.bloc_flutter_time_tracker",
+            "certificate_hash": "2f371ce232691dcce59802d0d6f9c416c21a220f"
+          }
+        },
+        {
+          "client_id": "71726447984-6ea9kj5jfhl6mck29ijhm8d31p11c179.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBljq8g_suWP-_LLFdGtlmTFqndoPf4EIA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "71726447984-6ea9kj5jfhl6mck29ijhm8d31p11c179.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
