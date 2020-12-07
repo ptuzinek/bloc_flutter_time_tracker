@@ -1,14 +1,15 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:bloc_flutter_time_tracker/app/services/auth.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key key, @required this.onSingedOut}) : super(key: key);
-  final VoidCallback onSingedOut;
+  const HomePage({Key key, @required this.auth}) : super(key: key);
+  final AuthBase auth;
 
   Future<void> _signInOut() async {
     try {
-      await FirebaseAuth.instance.signOut();
-      onSingedOut();
+      // Here we add value to the Stream, because when we sign-in, Firebase
+      // will emit new User type value to the authStateChanges Stream.
+      await auth.signOut();
     } catch (e) {
       print(e.toString());
     }

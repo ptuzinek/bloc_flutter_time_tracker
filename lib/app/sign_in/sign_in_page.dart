@@ -1,20 +1,32 @@
+import 'package:bloc_flutter_time_tracker/app/services/auth.dart';
+import 'package:bloc_flutter_time_tracker/app/sign_in/email_sign_in_page.dart';
 import 'package:bloc_flutter_time_tracker/app/sign_in/sign_in_button.dart';
 import 'package:bloc_flutter_time_tracker/app/sign_in/social_sign_in_button.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SignInPage extends StatelessWidget {
-  const SignInPage({Key key, @required this.onSingIn}) : super(key: key);
-  final void Function(User) onSingIn;
+  const SignInPage({Key key, @required this.auth}) : super(key: key);
+  final AuthBase auth;
 
   Future<void> _signInAnonymously() async {
     try {
-      final userCredentials = await FirebaseAuth.instance.signInAnonymously();
-      onSingIn(userCredentials.user);
+      // Here we add value to the Stream, because when we sign-in, Firebase
+      // will emit new User type value to the authStateChanges Stream.
+      await auth.signInAnonymously();
     } catch (e) {
       print(e.toString());
     }
+  }
+
+  void _signInWithEmail(BuildContext context) {
+    // Show EmailSignInPage
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (context) => EmailSignInPage(auth: auth),
+      ),
+    );
   }
 
   @override
@@ -25,12 +37,12 @@ class SignInPage extends StatelessWidget {
         centerTitle: true,
         elevation: 2.0,
       ),
-      body: _buildContainer(),
+      body: _buildContainer(context),
       backgroundColor: Colors.grey[200],
     );
   }
 
-  Widget _buildContainer() {
+  Widget _buildContainer(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(16.0),
       child: Column(
@@ -66,7 +78,7 @@ class SignInPage extends StatelessWidget {
             text: 'Sign in with Email',
             textColor: Colors.white,
             color: Colors.teal[700],
-            onPressed: () {},
+            onPressed: () => _signInWithEmail(context),
           ),
           SizedBox(height: 8.0),
           Text(
