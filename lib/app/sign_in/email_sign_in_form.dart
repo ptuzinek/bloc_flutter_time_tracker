@@ -41,7 +41,7 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
     } catch (e) {
       print(e.toString());
       showDialog(
-        context: context,
+        context: context, // new commit
         builder: (context) {
           return AlertDialog(
             title: Text('Sign in Failed'),
