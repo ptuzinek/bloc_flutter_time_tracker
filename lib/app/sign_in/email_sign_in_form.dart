@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:bloc_flutter_time_tracker/app/services/auth.dart';
 import 'package:bloc_flutter_time_tracker/app/sign_in/validators.dart';
 import 'package:bloc_flutter_time_tracker/common_widgets/form_submit_button.dart';
+import 'package:bloc_flutter_time_tracker/common_widgets/show_alert_dialog.dart';
 import 'package:flutter/material.dart';
 
 enum EmailSignInFormType { signIn, register }
@@ -39,22 +42,10 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
       }
       Navigator.pop(context);
     } catch (e) {
-      print(e.toString());
-      showDialog(
-        context: context, // new commit
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Sign in Failed'),
-            content: Text(e.toString()),
-            actions: [
-              FlatButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
+      showAlertDialog(context,
+          title: 'Sign in Failed',
+          content: e.toString(),
+          defaultActionText: 'OK');
       // This code executes if we have success or failure:
     } finally {
       setState(() {
