@@ -4,13 +4,12 @@ import 'package:bloc_flutter_time_tracker/app/sign_in/sign_in_button.dart';
 import 'package:bloc_flutter_time_tracker/app/sign_in/social_sign_in_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SignInPage extends StatelessWidget {
-  const SignInPage({Key key, @required this.auth}) : super(key: key);
-  final AuthBase auth;
-
-  Future<void> _signInAnonymously() async {
+  Future<void> _signInAnonymously(BuildContext context) async {
     try {
+      final auth = Provider.of<AuthBase>(context, listen: false);
       // Here we add value to the Stream, because when we sign-in, Firebase
       // will emit new User type value to the authStateChanges Stream.
       await auth.signInAnonymously();
@@ -24,7 +23,7 @@ class SignInPage extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         fullscreenDialog: true,
-        builder: (context) => EmailSignInPage(auth: auth),
+        builder: (context) => EmailSignInPage(),
       ),
     );
   }
@@ -94,7 +93,7 @@ class SignInPage extends StatelessWidget {
             text: 'Go Anonymous',
             textColor: Colors.black,
             color: Colors.lime[300],
-            onPressed: _signInAnonymously,
+            onPressed: () => _signInAnonymously(context),
           ),
         ],
       ),

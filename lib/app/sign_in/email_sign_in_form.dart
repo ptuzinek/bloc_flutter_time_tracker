@@ -1,17 +1,16 @@
 import 'dart:io';
-
 import 'package:bloc_flutter_time_tracker/app/services/auth.dart';
 import 'package:bloc_flutter_time_tracker/app/sign_in/validators.dart';
 import 'package:bloc_flutter_time_tracker/common_widgets/form_submit_button.dart';
 import 'package:bloc_flutter_time_tracker/common_widgets/show_alert_dialog.dart';
+import 'package:bloc_flutter_time_tracker/common_widgets/show_exception_alert_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 enum EmailSignInFormType { signIn, register }
 
 class EmailSignInForm extends StatefulWidget with EmailAndPasswordValidators {
-  EmailSignInForm({@required this.auth});
-  final AuthBase auth;
-
   @override
   _EmailSignInFormState createState() => _EmailSignInFormState();
 }
@@ -34,18 +33,20 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
       _submitted = true;
       _isLoading = true;
     });
+    final auth = Provider.of<AuthBase>(context, listen: false);
     try {
       if (_formType == EmailSignInFormType.signIn) {
-        await widget.auth.signInWithEmailAndPassword(_email, _password);
+        await auth.signInWithEmailAndPassword(_email, _password);
       } else {
-        await widget.auth.createUserWithEmailAndPassword(_email, _password);
+        await auth.createUserWithEmailAndPassword(_email, _password);
       }
       Navigator.pop(context);
-    } catch (e) {
-      showAlertDialog(context,
-          title: 'Sign in Failed',
-          content: e.toString(),
-          defaultActionText: 'OK');
+    } on FirebaseAuthException catch (e) {
+      showExceptionAlertDialog(
+        context,
+        title: 'Sign in Failed',
+        exception: e,
+      );
       // This code executes if we have success or failure:
     } finally {
       setState(() {

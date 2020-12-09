@@ -1,13 +1,12 @@
 import 'package:bloc_flutter_time_tracker/app/services/auth.dart';
 import 'package:bloc_flutter_time_tracker/common_widgets/show_alert_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key key, @required this.auth}) : super(key: key);
-  final AuthBase auth;
-
-  Future<void> _signInOut() async {
+  Future<void> _signInOut(BuildContext context) async {
     try {
+      final auth = Provider.of<AuthBase>(context, listen: false);
       // Here we add value to the Stream, because when we sign-in, Firebase
       // will emit new User type value to the authStateChanges Stream.
       await auth.signOut();
@@ -24,7 +23,7 @@ class HomePage extends StatelessWidget {
         defaultActionText: 'Logout');
 
     if (didRequestSignOut == true) {
-      _signInOut();
+      _signInOut(context);
     }
   }
 
