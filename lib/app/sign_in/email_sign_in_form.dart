@@ -1,8 +1,6 @@
-import 'dart:io';
 import 'package:bloc_flutter_time_tracker/app/services/auth.dart';
 import 'package:bloc_flutter_time_tracker/app/sign_in/validators.dart';
 import 'package:bloc_flutter_time_tracker/common_widgets/form_submit_button.dart';
-import 'package:bloc_flutter_time_tracker/common_widgets/show_alert_dialog.dart';
 import 'package:bloc_flutter_time_tracker/common_widgets/show_exception_alert_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +24,15 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
   String get _password => _passwordController.text;
   bool _submitted = true;
   bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    super.dispose();
+  }
 
   void _submit() async {
     // submit email and password to Firebase

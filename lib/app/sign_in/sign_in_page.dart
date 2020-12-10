@@ -2,19 +2,45 @@ import 'package:bloc_flutter_time_tracker/app/services/auth.dart';
 import 'package:bloc_flutter_time_tracker/app/sign_in/email_sign_in_page.dart';
 import 'package:bloc_flutter_time_tracker/app/sign_in/sign_in_button.dart';
 import 'package:bloc_flutter_time_tracker/app/sign_in/social_sign_in_button.dart';
+import 'package:bloc_flutter_time_tracker/common_widgets/show_exception_alert_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class SignInPage extends StatelessWidget {
+class SignInPage extends StatefulWidget {
+  @override
+  _SignInPageState createState() => _SignInPageState();
+}
+
+class _SignInPageState extends State<SignInPage> {
+  bool isLoading = false;
+
+  void _updateLoadingState() {
+    setState(() {
+      isLoading = !isLoading;
+    });
+  }
+
+  void _showSignInError(BuildContext context, Exception exception) {
+    if (exception is FirebaseAuthException &&
+        exception.code == 'ERROR_ABORTED_BY_USER') {
+      return;
+    }
+    showExceptionAlertDialog(context,
+        title: 'Sign in Failed', exception: exception);
+  }
+
   Future<void> _signInAnonymously(BuildContext context) async {
     try {
+      _updateLoadingState();
       final auth = Provider.of<AuthBase>(context, listen: false);
       // Here we add value to the Stream, because when we sign-in, Firebase
       // will emit new User type value to the authStateChanges Stream.
       await auth.signInAnonymously();
-    } catch (e) {
-      print(e.toString());
+    } on Exception catch (e) {
+      _showSignInError(context, e);
+      _updateLoadingState();
     }
   }
 
@@ -48,13 +74,9 @@ class SignInPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Sign in',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 32.0,
-              fontWeight: FontWeight.w600,
-            ),
+          SizedBox(
+            height: 50.0,
+            child: _buildHeader(),
           ),
           SizedBox(height: 48.0),
           SocialSignInButton(
@@ -62,7 +84,7 @@ class SignInPage extends StatelessWidget {
             assetName: 'images/google-logo.png',
             textColor: Colors.black87,
             color: Colors.white,
-            onPressed: () {},
+            onPressed: isLoading ? null : () {},
           ),
           SizedBox(height: 8.0),
           SocialSignInButton(
@@ -70,14 +92,14 @@ class SignInPage extends StatelessWidget {
             assetName: 'images/facebook-logo.png',
             textColor: Colors.white,
             color: Color(0xFF334D92),
-            onPressed: () {},
+            onPressed: isLoading ? null : () {},
           ),
           SizedBox(height: 8.0),
           SignInButton(
             text: 'Sign in with Email',
             textColor: Colors.white,
             color: Colors.teal[700],
-            onPressed: () => _signInWithEmail(context),
+            onPressed: isLoading ? null : () => _signInWithEmail(context),
           ),
           SizedBox(height: 8.0),
           Text(
@@ -93,9 +115,25 @@ class SignInPage extends StatelessWidget {
             text: 'Go Anonymous',
             textColor: Colors.black,
             color: Colors.lime[300],
-            onPressed: () => _signInAnonymously(context),
+            onPressed: isLoading ? null : () => _signInAnonymously(context),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    if (isLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    return Text(
+      'Sign in',
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        fontSize: 32.0,
+        fontWeight: FontWeight.w600,
       ),
     );
   }
