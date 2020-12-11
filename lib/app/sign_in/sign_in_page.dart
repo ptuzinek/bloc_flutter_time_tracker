@@ -1,5 +1,6 @@
 import 'package:bloc_flutter_time_tracker/app/services/auth.dart';
 import 'package:bloc_flutter_time_tracker/app/sign_in/email_sign_in_page.dart';
+import 'package:bloc_flutter_time_tracker/app/sign_in/sign_in_bloc.dart';
 import 'package:bloc_flutter_time_tracker/app/sign_in/sign_in_button.dart';
 import 'package:bloc_flutter_time_tracker/app/sign_in/social_sign_in_button.dart';
 import 'package:bloc_flutter_time_tracker/common_widgets/show_exception_alert_dialog.dart';
@@ -8,18 +9,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class SignInPage extends StatefulWidget {
-  @override
-  _SignInPageState createState() => _SignInPageState();
-}
-
-class _SignInPageState extends State<SignInPage> {
-  bool isLoading = false;
-
-  void _updateLoadingState() {
-    setState(() {
-      isLoading = !isLoading;
-    });
+class SignInPage extends StatelessWidget {
+  static Widget create(BuildContext context) {
+    final auth = Provider.of<AuthBase>(context, listen: false);
+    return Provider<SignInBloc>(
+      create: (_) => SignInBloc(auth: auth),
+      child: Consumer<SignInBloc>(
+        builder: (_, bloc, __) => SignInPage(),
+      ),
+    );
   }
 
   void _showSignInError(BuildContext context, Exception exception) {
@@ -32,15 +30,14 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Future<void> _signInAnonymously(BuildContext context) async {
+    final bloc = Provider.of<SignInBloc>(context, listen: false);
     try {
-      _updateLoadingState();
       final auth = Provider.of<AuthBase>(context, listen: false);
       // Here we add value to the Stream, because when we sign-in, Firebase
       // will emit new User type value to the authStateChanges Stream.
-      await auth.signInAnonymously();
+      await bloc.signInAnonymously();
     } on Exception catch (e) {
       _showSignInError(context, e);
-      _updateLoadingState();
     }
   }
 
@@ -56,18 +53,24 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
+    final bloc = Provider.of<SignInBloc>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: Text('Time Tracker'),
         centerTitle: true,
         elevation: 2.0,
       ),
-      body: _buildContainer(context),
+      body: StreamBuilder<bool>(
+          stream: bloc.isLoadingStream,
+          initialData: false,
+          builder: (context, snapshot) {
+            return _buildContainer(context, snapshot.data);
+          }),
       backgroundColor: Colors.grey[200],
     );
   }
 
-  Widget _buildContainer(BuildContext context) {
+  Widget _buildContainer(BuildContext context, bool isLoading) {
     return Padding(
       padding: EdgeInsets.all(16.0),
       child: Column(
@@ -76,7 +79,7 @@ class _SignInPageState extends State<SignInPage> {
         children: [
           SizedBox(
             height: 50.0,
-            child: _buildHeader(),
+            child: _buildHeader(isLoading),
           ),
           SizedBox(height: 48.0),
           SocialSignInButton(
@@ -122,7 +125,7 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(bool isLoading) {
     if (isLoading) {
       return Center(
         child: CircularProgressIndicator(),
