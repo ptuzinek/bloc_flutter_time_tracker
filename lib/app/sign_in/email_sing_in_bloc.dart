@@ -47,8 +47,8 @@ class EmailSignInBloc {
         await auth.createUserWithEmailAndPassword(
             _model.email, _model.password);
       }
-    } on PlatformException catch (e) {
-      //updateWith(isLoading: false);
+    } catch (e) {
+      updateWith(isLoading: false);
       rethrow;
     }
   }

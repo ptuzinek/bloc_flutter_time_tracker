@@ -46,9 +46,9 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
   Future<void> _submit() async {
     // submit email and password to Firebase
     try {
-      widget.bloc.submit();
+      await widget.bloc.submit();
       Navigator.of(context).pop();
-    } on PlatformException catch (e) {
+    } on FirebaseException catch (e) {
       showExceptionAlertDialog(
         context,
         title: 'Sign in Failed',
@@ -94,9 +94,6 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
   }
 
   TextField _buildPasswordTextField(EmailSignInModel model) {
-    bool showErrorText =
-        model.submitted && !widget.emailValidator.isValid(model.email);
-
     return TextField(
       focusNode: _passwordFocusNode,
       controller: _passwordController,
@@ -113,8 +110,6 @@ class _EmailSignInFormState extends State<EmailSignInForm> {
   }
 
   TextField _buildEmailTextField(EmailSignInModel model) {
-    bool showErrorText =
-        model.submitted && !widget.emailValidator.isValid(model.email);
     return TextField(
       focusNode: _emailFocusNode,
       controller: _emailController,
